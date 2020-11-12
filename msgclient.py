@@ -1,7 +1,7 @@
 # Alumnos:
 # Armando Gonzalez V-20.977.787
 # Michael Amariscua V-2-.---.---
-# Ricardo Perez V-2-.---.---
+# Ricardo Perez V-26.040.729
 
 import sys
 import os
