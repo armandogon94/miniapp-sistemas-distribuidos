@@ -7,6 +7,9 @@ import sys
 import os
 import threading
 import time
+import socket
+import base64
+from hashlib import md5
 
 try:
     ipAddress = sys.argv[1]
@@ -22,4 +25,7 @@ print("Cargando datos... Espere un momento")
 print("ip: ", ipAddress)
 print("port: ", portConnection)
 print("user: ", username)
-sock = createConnection
+"""with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((ipAddress, portConnection))
+    s.sendall(b'Hello, world')
+    data = s.recv(1024)"""
