@@ -28,7 +28,6 @@ while True:
     print("Bienvenido al sistema!")
     print("Cargando datos... Espere un momento")
     print (addr)
-
     #print("ip: ", ipAddress)
     #print("port: ", portConnection)
     #print("user: ", username)
@@ -40,8 +39,6 @@ while True:
         
     peticion = conexion.recv(1024)
     print (peticion)
-
-
     txt = "Hola, te saludo desde el servidor"
    #sck.send(txt.encode("ascii"))
 
