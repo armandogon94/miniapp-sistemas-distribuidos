@@ -2,7 +2,7 @@ import socket
 import base64
 import threading
 import time
-from hashlib import md5
+import hashlib
 
 
 class myThread (threading.Thread):
@@ -11,33 +11,37 @@ class myThread (threading.Thread):
         self.threadID = threadID
         self.name = name
         self.size = size
-        self.rcvmsg = False
+        self.md5 = ""
 
     def run(self):
         print("Starting " + self.name)
-        udp_message_reception(self.name, self.size)
+        self.udp_message_reception(self.name, self.size)
         print("Exiting " + self.name)
 
-    def received(self):
-        return self.rcvmsg
+    def set_md5(self, md5):
+        self.md5 = md5
 
+    def get_md5(self):
+        return self.md5
 
-def udp_message_reception(threadName, size):
-    udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    udp_socket.bind(('127.0.0.1', 15601))
-    udp_socket.settimeout(5)
-    try:
-        print("entro udp")
-        newsize = size + 4 - (size % 4)
-        givememsg_response = udp_socket.recv(newsize).decode('utf-8')
-
-        server_msg = base64.b64decode(givememsg_response).decode("utf-8")
-        print("recibio udp")
-        print(givememsg_response)
-        print(server_msg)
-    except socket.timeout:
-        print("error udp")
-    udp_socket.close()
+    def udp_message_reception(self, threadName, size):
+        udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udp_socket.bind(('127.0.0.1', 15601))
+        udp_socket.settimeout(10)
+        try:
+            print("entro udp")
+            newsize = size + 4 - (size % 4)
+            givememsg_response = udp_socket.recv(newsize)
+            server_msg = base64.b64decode(
+                givememsg_response.decode('utf-8')).decode("utf-8")
+            self.set_md5(hashlib.md5(givememsg_response).hexdigest())
+            print("recibio udp")
+            print(givememsg_response)
+            print(server_msg)
+            print(self.md5)
+        except socket.timeout:
+            print("error udp")
+        udp_socket.close()
 
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,13 +67,18 @@ if helloiam_response_txt == 'ok\n':
         udp_thread = myThread(1, "UDP-1", msglen_size)
         udp_thread.start()
         givememsg_txt = "givememsg 15601"
-        counter = 5
+        counter = 3
         while counter:
             tcp_socket.send(givememsg_txt.encode("ascii"))
             givememsg_response = tcp_socket.recv(1024)
             givememsg_response_txt = givememsg_response.decode("ascii")
             print("givememsg response ->"+givememsg_response_txt)
             counter -= 1
+        chkmd5_txt = "chkmsg " + udp_thread.get_md5()
+        print(chkmd5_txt)
+        tcp_socket.send(chkmd5_txt.encode('ascii'))
+        chkmd5_response = tcp_socket.recv(1024).decode('ascii')
+        print("ckmd5 response -> " + chkmd5_response)
         udp_thread.join()
 
 bye_txt = "bye"
