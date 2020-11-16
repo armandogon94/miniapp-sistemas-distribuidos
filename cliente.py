@@ -73,7 +73,7 @@ except:
         "ERROR. Por favor ingrese los datos como se muestra --> cliente.py ipDestino puertoTCP usuario ipLocal puertoUDP")
 
 print("Bienvenido al sistema!")
-print("Recibiendo datos... Espere un momento")
+print("Procesando... Espere un momento")
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.connect((ip_address, int(tcp_port_connection)))
 
